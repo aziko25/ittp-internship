@@ -7,6 +7,7 @@ import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Repository;
 
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 @Repository
@@ -35,7 +36,7 @@ public class FoodDeliveryClientsRepository {
         List<Map<String, Object>> paginatedResults = new ArrayList<>();
 
         try (Cursor<byte[]> cursor = Objects.requireNonNull(redisTemplate.getConnectionFactory()).getConnection()
-                .scan(ScanOptions.scanOptions().count(size).match("*").build())) {
+                .scan(ScanOptions.scanOptions().count(size).match("*").build())) { // Fetch all keys
 
             int start = page * size;
             int end = start + size;
@@ -45,16 +46,28 @@ public class FoodDeliveryClientsRepository {
 
                 byte[] key = cursor.next();
 
-                if (currentIndex >= start) {
+                String keyStr = new String(key, StandardCharsets.UTF_8);
 
-                    String keyStr = new String(key);
-                    String value = (String) redisTemplate.opsForValue().get(keyStr);
+                if (!keyStr.startsWith("record:")) {
 
-                    Map<String, Object> record = new HashMap<>();
+                    if (currentIndex >= start) {
 
-                    record.put(keyStr, value);
+                        Object value;
 
-                    paginatedResults.add(record);
+                        try {
+
+                            value = redisTemplate.opsForValue().get(keyStr);
+                        }
+                        catch (Exception e) {
+
+                            value = "Error fetching value: " + e.getMessage();
+                        }
+
+                        Map<String, Object> record = new HashMap<>();
+
+                        record.put(keyStr, value);
+                        paginatedResults.add(record);
+                    }
                 }
 
                 currentIndex++;
