@@ -16,7 +16,7 @@ public class FoodDeliveryClientsService {
     private final RedisTemplate<String, String> redisTemplate;
 
     //private static final int TOTAL_ENTRIES = 18_758_328;
-    private static final int TOTAL_ENTRIES = 1000;
+    private static final int TOTAL_ENTRIES = 10000;
     private static final String PHONE_PREFIX = "998";
     private static final int BATCH_SIZE = 100000;
     private static final Random random = new Random();

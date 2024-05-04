@@ -7,8 +7,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.*;
 
-import static ittp.ittp.Repositories.FoodDeliveryClientsRepository.getCursorsAndPagination;
-
 @Repository
 @RequiredArgsConstructor
 public class AccountRecordRepository {
@@ -40,18 +38,6 @@ public class AccountRecordRepository {
         }
 
         return null;
-    }
-
-    private AccountRecord convertToAccountRecord(Map<Object, Object> hash) {
-
-        System.out.println("here");
-
-        AccountRecord record = new AccountRecord();
-        record.setId((String) hash.get("id"));
-        record.setAccount(Long.valueOf((String) hash.get("account")));
-        record.setName((String) hash.get("name"));
-        record.setValue(Double.valueOf((String) hash.get("value")));
-        return record;
     }
 
     public AccountRecord findById(String id) {
@@ -111,18 +97,26 @@ public class AccountRecordRepository {
 
     private AccountRecord buildAccountRecord(String id, Map<Object, Object> hash) {
 
-        AccountRecord record = new AccountRecord();
+        if (hash != null && !hash.isEmpty()) {
 
-        record.setId(id);
-        record.setAccount(Long.parseLong((String) hash.get("account")));
-        record.setName((String) hash.get("name"));
-        record.setValue(Double.parseDouble((String) hash.get("value")));
+            AccountRecord record = new AccountRecord();
 
-        return record;
+            record.setId(id);
+            record.setAccount(Long.parseLong((String) hash.get("account")));
+            record.setName((String) hash.get("name"));
+            record.setValue(Double.parseDouble((String) hash.get("value")));
+
+            return record;
+        }
+
+        return null;
     }
 
     public void deleteById(String id) {
 
-        redisTemplate.delete(id);
+        String key = "record:" + id;
+
+        redisTemplate.delete(key);
+        redisTemplate.opsForZSet().remove("recordKeys", key);
     }
 }
