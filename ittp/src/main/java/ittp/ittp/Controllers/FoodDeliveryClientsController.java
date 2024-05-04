@@ -13,6 +13,12 @@ public class FoodDeliveryClientsController {
 
     private final FoodDeliveryClientsService foodDeliveryClientsService;
 
+    @GetMapping("/all")
+    public ResponseEntity<?> allClients(@RequestParam int page, @RequestParam int size) {
+
+        return ResponseEntity.ok(foodDeliveryClientsService.allClients(page, size));
+    }
+
     @GetMapping("/phone/{phone}")
     public ResponseEntity<?> clientByPhone(@PathVariable String phone) {
 

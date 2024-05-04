@@ -30,26 +30,16 @@ public class AccountRecordService {
 
     public AccountRecord findById(String id) {
 
-        return accountRecordRepository.findById(id).orElse(null);
+        return accountRecordRepository.findById(id);
     }
 
-    public List<AccountRecord> allAccountRecords() {
+    public AccountRecord findByAnyValue(String field, String value) {
 
-        return accountRecordRepository.findAll();
+        return accountRecordRepository.findByField(field, value);
     }
 
-    public List<AccountRecord> findByAccount(Long account) {
+    public List<AccountRecord> allAccountRecords(int page, int size) {
 
-        return accountRecordRepository.findByAccount(account);
-    }
-
-    public List<AccountRecord> findByName(String name) {
-
-        return accountRecordRepository.findByName(name);
-    }
-
-    public List<AccountRecord> findByValue(Double value) {
-
-        return accountRecordRepository.findByValue(value);
+        return accountRecordRepository.findAll(page, size);
     }
 }
